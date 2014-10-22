@@ -54,6 +54,11 @@ public class Magpie4
 			response = transformIWantToStatement(statement);
 		}
 
+        if (statement.indexOf("I want", 0) >= 0)
+        {
+            response = transformIWantToStatement(statement);
+        }
+
 		else
 		{
 			// Look for a two word (you <something> me)
@@ -211,7 +216,7 @@ public class Magpie4
 		else if (whichResponse == 3)
 		{
 			response = "You don't say.";
-		}
+
 
 		return response;
 	}
