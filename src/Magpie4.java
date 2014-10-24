@@ -54,21 +54,20 @@ public class Magpie4
 			response = transformIWantToStatement(statement);
 		}
 
-        if (statement.indexOf("I want", 0) >= 0)
+        else if (statement.indexOf("I want", 0) >= 0)
         {
-            response = transformIWantToStatement(statement);
+            response = transformIWantStatement(statement);
         }
-
 		else
 		{
-			// Look for a two word (you <something> me)
+			// Look for a two word (I <something> you)
 			// pattern
-			int psn = findKeyword(statement, "you", 0);
+			int psn = findKeyword(statement, "I", 0);
 
 			if (psn >= 0
-					&& findKeyword(statement, "me", psn) >= 0)
+					&& findKeyword(statement, "you", psn) >= 0)
 			{
-				response = transformYouMeStatement(statement);
+				response = transformIYouStatement(statement);
 			}
 			else
 			{
@@ -77,8 +76,10 @@ public class Magpie4
 		}
 		return response;
 	}
-	
-	/**
+
+
+
+    /**
 	 * Take a statement with "I want to <something>." and transform it into 
 	 * "What would it mean to <something>?"
 	 * @param statement the user statement, assumed to contain "I want to"
@@ -100,10 +101,30 @@ public class Magpie4
 		return "What would it mean to " + restOfStatement + "?";
 	}
 
-	
+    /**
+     * Take a statement with "I want <something>." and transform it into
+     * "What would it mean to <something>?"
+     * @param statement the user statement, assumed to contain "I want"
+     * @return the transformed statement
+     */
+    private String transformIWantStatement(String statement)
+    {
+        //  Remove the final period, if there is one
+        statement = statement.trim();
+        String lastChar = statement.substring(statement
+                .length() - 1);
+        if (lastChar.equals("."))
+        {
+            statement = statement.substring(0, statement
+                    .length() - 1);
+        }
+        int psn = findKeyword (statement, "I want", 0);
+        String restOfStatement = statement.substring(psn + 7).trim();
+        return "Would you really be happy if you had " + restOfStatement + "?";
+    }
 	
 	/**
-	 * Take a statement with "you <something> me" and transform it into 
+	 * Take a statement with "I <something> you" and transform it into
 	 * "What makes you think that I <something> you?"
 	 * @param statement the user statement, assumed to contain "you" followed by "me"
 	 * @return the transformed statement
@@ -120,8 +141,8 @@ public class Magpie4
 					.length() - 1);
 		}
 		
-		int psnOfYou = findKeyword (statement, "you", 0);
-		int psnOfMe = findKeyword (statement, "me", psnOfYou + 3);
+		int psnOfYou = findKeyword (statement, "I", 0);
+		int psnOfMe = findKeyword (statement, "you", psnOfYou + 3);
 		
 		String restOfStatement = statement.substring(psnOfYou + 3, psnOfMe).trim();
 		return "What makes you think that I " + restOfStatement + " you?";
@@ -194,31 +215,24 @@ public class Magpie4
 	 * Pick a default response to use if nothing else fits.
 	 * @return a non-committal string
 	 */
-	private String getRandomResponse()
-	{
-		final int NUMBER_OF_RESPONSES = 4;
-		double r = Math.random();
-		int whichResponse = (int)(r * NUMBER_OF_RESPONSES);
-		String response = "";
-		
-		if (whichResponse == 0)
-		{
-			response = "Interesting, tell me more.";
-		}
-		else if (whichResponse == 1)
-		{
-			response = "Hmmm.";
-		}
-		else if (whichResponse == 2)
-		{
-			response = "Do you really think so?";
-		}
-		else if (whichResponse == 3)
-		{
-			response = "You don't say.";
+	private String getRandomResponse() {
+        final int NUMBER_OF_RESPONSES = 4;
+        double r = Math.random();
+        int whichResponse = (int) (r * NUMBER_OF_RESPONSES);
+        String response = "";
+
+        if (whichResponse == 0) {
+            response = "Interesting, tell me more.";
+        } else if (whichResponse == 1) {
+            response = "Hmmm.";
+        } else if (whichResponse == 2) {
+            response = "Do you really think so?";
+        } else if (whichResponse == 3) {
+            response = "You don't say.";
 
 
-		return response;
-	}
-
+            return response;
+        }
+        return response;
+    }
 }
